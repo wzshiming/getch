@@ -22,6 +22,6 @@ func Getch() (rune, []byte, error) {
 	if n == 0 {
 		return 0, nil, io.ErrUnexpectedEOF
 	}
-	key, raw := bytes2Key(buf[:n], true)
+	key, raw := bytes2Key(buf[:n])
 	return key, raw, nil
 }
