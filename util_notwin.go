@@ -3,6 +3,8 @@
 package getch
 
 import (
+	"syscall"
+
 	"golang.org/x/sys/unix"
 )
 
@@ -10,21 +12,25 @@ type state struct {
 	termios unix.Termios
 }
 
-func makeRaw(fd int) (*state, error) {
-	termios, err := unix.IoctlGetTermios(fd, ioctlReadTermios)
+func read(p []byte) (int, error) {
+	return syscall.Read(int(hStdin), p)
+}
+
+func makeRaw() (*state, error) {
+	termios, err := unix.IoctlGetTermios(int(hStdin), ioctlReadTermios)
 	if err != nil {
 		return nil, err
 	}
 
 	termios.Lflag &^= unix.ECHO | unix.ECHONL | unix.ICANON
 
-	if err := unix.IoctlSetTermios(fd, ioctlWriteTermios, termios); err != nil {
+	if err := unix.IoctlSetTermios(int(hStdin), ioctlWriteTermios, termios); err != nil {
 		return nil, err
 	}
 
 	return &state{termios: *termios}, nil
 }
 
-func restored(fd int, state *state) error {
-	return unix.IoctlSetTermios(fd, ioctlWriteTermios, &state.termios)
+func restored(state *state) error {
+	return unix.IoctlSetTermios(int(hStdin), ioctlWriteTermios, &state.termios)
 }

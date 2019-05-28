@@ -2,20 +2,24 @@ package getch
 
 import (
 	"io"
-	"syscall"
+	"os"
+)
+
+var (
+	hStdin = os.Stdin.Fd()
 )
 
 // Getch get the pressed key directly without buffering, no need to enter enter to get.
 func Getch() (rune, []byte, error) {
 	var buf [6]byte
 
-	state, err := makeRaw(0)
+	state, err := makeRaw()
 	if err != nil {
 		return 0, nil, err
 	}
-	defer restored(0, state)
+	defer restored(state)
 
-	n, err := syscall.Read(0, buf[:])
+	n, err := read(buf[:])
 	if err != nil {
 		return 0, nil, err
 	}
