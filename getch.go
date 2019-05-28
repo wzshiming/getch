@@ -8,14 +8,14 @@ import (
 // Getch get the pressed key directly without buffering, no need to enter enter to get.
 func Getch() (rune, []byte, error) {
 	var buf [6]byte
-	fd := 0
-	state, err := makeRaw(fd)
+
+	state, err := makeRaw(0)
 	if err != nil {
 		return 0, nil, err
 	}
-	defer restored(fd, state)
+	defer restored(0, state)
 
-	n, err := syscall.Read(fd, buf[:])
+	n, err := syscall.Read(0, buf[:])
 	if err != nil {
 		return 0, nil, err
 	}
