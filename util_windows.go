@@ -11,7 +11,7 @@ type state struct {
 }
 
 func read(p []byte) (int, error) {
-	return syscall.Read(hStdin, p)
+	return syscall.Read(syscall.Handle(hStdin), p)
 }
 
 func makeRaw() (*state, error) {
