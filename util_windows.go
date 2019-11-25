@@ -10,11 +10,11 @@ type state struct {
 	mode uint32
 }
 
-func read(p []byte) (int, error) {
+func read(hStdin uintptr, p []byte) (int, error) {
 	return syscall.Read(syscall.Handle(hStdin), p)
 }
 
-func makeRaw() (*state, error) {
+func makeRaw(hStdin uintptr) (*state, error) {
 	var st uint32
 	if err := windows.GetConsoleMode(windows.Handle(hStdin), &st); err != nil {
 		return nil, err
@@ -26,6 +26,6 @@ func makeRaw() (*state, error) {
 	return &state{st}, nil
 }
 
-func restored(state *state) error {
+func restored(hStdin uintptr, state *state) error {
 	return windows.SetConsoleMode(windows.Handle(hStdin), state.mode)
 }

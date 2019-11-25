@@ -11,15 +11,21 @@ var (
 
 // Getch get the pressed key directly without buffering, no need to enter enter to get.
 func Getch() (rune, []byte, error) {
+	return GetchBy(hStdin)
+}
+
+// GetchBy get the pressed key directly without buffering, no need to enter enter to get.
+func GetchBy(hStdin uintptr) (rune, []byte, error) {
 	var buf [6]byte
 
-	state, err := makeRaw()
+	state, err := makeRaw(hStdin)
 	if err != nil {
 		return 0, nil, err
-	}
-	defer restored(state)
 
-	n, err := read(buf[:])
+	}
+	defer restored(hStdin, state)
+
+	n, err := read(hStdin, buf[:])
 	if err != nil {
 		return 0, nil, err
 	}

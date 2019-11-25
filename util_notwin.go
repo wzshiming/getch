@@ -12,11 +12,11 @@ type state struct {
 	termios unix.Termios
 }
 
-func read(p []byte) (int, error) {
+func read(hStdin uintptr, p []byte) (int, error) {
 	return syscall.Read(int(hStdin), p)
 }
 
-func makeRaw() (*state, error) {
+func makeRaw(hStdin uintptr) (*state, error) {
 	termios, err := unix.IoctlGetTermios(int(hStdin), ioctlReadTermios)
 	if err != nil {
 		return nil, err
@@ -31,6 +31,6 @@ func makeRaw() (*state, error) {
 	return &state{termios: *termios}, nil
 }
 
-func restored(state *state) error {
+func restored(hStdin uintptr, state *state) error {
 	return unix.IoctlSetTermios(int(hStdin), ioctlWriteTermios, &state.termios)
 }
