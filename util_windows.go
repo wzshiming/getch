@@ -29,3 +29,9 @@ func makeRaw(hStdin uintptr) (*state, error) {
 func restored(hStdin uintptr, state *state) error {
 	return windows.SetConsoleMode(windows.Handle(hStdin), state.mode)
 }
+
+func isTerminal() bool {
+	var st uint32
+	err := windows.GetConsoleMode(windows.Handle(hStdin), &st)
+	return err == nil
+}

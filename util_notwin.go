@@ -8,6 +8,7 @@ import (
 	"golang.org/x/sys/unix"
 )
 
+
 type state struct {
 	termios unix.Termios
 }
@@ -33,4 +34,9 @@ func makeRaw(hStdin uintptr) (*state, error) {
 
 func restored(hStdin uintptr, state *state) error {
 	return unix.IoctlSetTermios(int(hStdin), ioctlWriteTermios, &state.termios)
+}
+
+func isTerminal() bool {
+	_, err := unix.IoctlGetTermios(int(hStdin), ioctlReadTermios)
+	return err == nil
 }
